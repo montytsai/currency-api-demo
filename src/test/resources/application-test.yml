@@ -1,0 +1,5 @@
+# Configuration for the 'test' profile.
+# Spring Boot will automatically use this during tests.
+# This ensures tests run in an isolated environment.
+server:
+  port: 0 # Use a random available port for tests

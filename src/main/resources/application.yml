@@ -1,0 +1,37 @@
+# ===============================================
+# SERVER & SWAGGER CONFIGURATION
+# ===============================================
+server:
+  port: 8080
+
+springdoc:
+  info:
+    title: Currency API Demo
+    description: 完整的 API 檔案，包含幣別資料的 CRUD 操作與 Coindesk 資料轉換服務。
+    version: 1.0.0
+  swagger-ui:
+    enabled: true
+    title: API 檔案 | Currency Demo
+  api-docs:
+    path: /api-docs
+
+# ===============================================
+# DATABASE & EXTERNAL API CONFIGURATION
+# ===============================================
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    # Automatically run schema.sql and data.sql on startup
+    defer-datasource-initialization: true
+  h2:
+    console:
+      enabled: true
+
+coindesk:
+  api:
+    url: https://kengp3.github.io/blog/coindesk.json
