@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -25,27 +26,30 @@ public class CoinDeskMapper {
 
     private static final DateTimeFormatter OUTPUT_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
-    /**
-     * 將原始 CoinDesk 回應和幣別資料庫資料，轉換為新的 API 回應格式。
-     *
-     * @param originalData 從 CoinDesk API 獲取的原始資料
-     * @param currencyMap  從資料庫查詢到的幣別資料，以幣別代碼為 Key 的 Map
-     * @return 轉換後的新 API 回應物件
-     */
     public TransformedCoinDeskResponse toTransformedResponse(CoinDeskResponse originalData, Map<String, Currency> currencyMap) {
         log.debug("Starting transformation of CoinDesk response.");
         TransformedCoinDeskResponse transformedResponse = new TransformedCoinDeskResponse();
 
         // 1. 轉換時間格式
-        transformedResponse.setUpdatedTime(formatUpdatedTime(originalData.getTime().getUpdatedISO()));
+        if (originalData.getTime() != null && originalData.getTime().getUpdatedISO() != null) {
+            transformedResponse.setUpdatedTime(formatUpdatedTime(originalData.getTime().getUpdatedISO()));
+        } else {
+            log.warn("Original data is missing time information.");
+            transformedResponse.setUpdatedTime("N/A");
+        }
 
         // 2. 處理幣別資料轉換
-        List<TransformedCoinDeskResponse.CurrencyInfo> currencyInfos = originalData.getBpi().values().stream()
-                .map(bpiData -> toCurrencyInfo(bpiData, currencyMap.get(bpiData.getCode())))
-                .collect(Collectors.toList());
-        transformedResponse.setCurrencyInfo(currencyInfos);
+        if (originalData.getBpi() != null) {
+            List<TransformedCoinDeskResponse.CurrencyInfo> currencyInfos = originalData.getBpi().values().stream()
+                    .map(bpiData -> toCurrencyInfo(bpiData, currencyMap.get(bpiData.getCode())))
+                    .collect(Collectors.toList());
+            transformedResponse.setCurrencyInfo(currencyInfos);
+            log.debug("Transformation complete. Mapped {} currency entries.", currencyInfos.size());
+        } else {
+            log.warn("Original data is missing BPI information.");
+            transformedResponse.setCurrencyInfo(Collections.emptyList());
+        }
 
-        log.debug("Transformation complete. Mapped {} currency entries.", currencyInfos.size());
         return transformedResponse;
     }
 

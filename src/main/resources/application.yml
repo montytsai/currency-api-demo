@@ -56,12 +56,12 @@ spring:
 # ===============================================
 # EXTERNAL API CONFIGURATION
 # ===============================================
-
 coin-desk:
   api:
     url: https://kengp3.github.io/blog/coindesk.json
-    timeout: 5000
-    retry-count: 3
+    timeout:
+      connect: 3000  # 3 seconds connection timeout
+      read: 5000     # 5 seconds read timeout
 
 # ===============================================
 # LOGGING CONFIGURATION

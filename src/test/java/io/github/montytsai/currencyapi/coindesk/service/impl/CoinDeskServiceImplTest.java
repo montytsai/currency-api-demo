@@ -9,10 +9,14 @@ import io.github.montytsai.currencyapi.currency.repository.CurrencyRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,76 +24,84 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+/**
+ * 對 CoinDeskServiceImpl 的核心商業邏輯進行單元測試。
+ */
+@ExtendWith(MockitoExtension.class)
 class CoinDeskServiceImplTest {
 
-    @Mock
-    private RestTemplate restTemplate;
+    // --- Mock Dependencies ---
+    @Mock private WebClient webClient;
+    @Mock private CurrencyRepository currencyRepository;
 
-    @Mock
-    private CurrencyRepository currencyRepository;
+    // WebClient 呼叫鏈所需的 Mocks
+    @Mock private WebClient.RequestHeadersUriSpec requestHeadersUriSpec;
+    @Mock private WebClient.RequestHeadersSpec requestHeadersSpec;
+    @Mock private WebClient.ResponseSpec responseSpec;
 
-    private final CoinDeskMapper coinDeskMapper = new CoinDeskMapper();
-
-    private final CoinDeskServiceImpl coinDeskService = new CoinDeskServiceImpl();
+    // --- 受測物件 (System Under Test) ---
+    private CoinDeskServiceImpl coinDeskService;
 
     @BeforeEach
     void setUp() {
-        // 初始化所有 @Mock 註解的欄位 (restTemplate, currencyRepository)
-        MockitoAnnotations.openMocks(this);
+        // 手動建立受測物件，並將依賴注入。
+        coinDeskService = new CoinDeskServiceImpl(
+                webClient,
+                currencyRepository,
+                new CoinDeskMapper() // <-- 直接傳入真實的 Mapper 實例
+        );
 
-        ReflectionTestUtils.setField(coinDeskService, "restTemplate", restTemplate);
-        ReflectionTestUtils.setField(coinDeskService, "currencyRepository", currencyRepository);
-        ReflectionTestUtils.setField(coinDeskService, "coinDeskMapper", coinDeskMapper);
-
-        // 為 @Value 欄位設定假值
+        // 在測試環境中，手動為 @Value 欄位賦值。
         ReflectionTestUtils.setField(coinDeskService, "coinDeskApiUrl", "http://fake-url.com");
     }
 
     @Test
-    @DisplayName("測試資料轉換邏輯應能正確格式化時間並整合中文名稱")
-    void testGetTransformedCoinDeskData() {
-        // 1. Arrange (準備假資料)
-        // 準備 Coindesk API 的假回應
-        CoinDeskResponse fakeResponse = createFakeCoinDeskResponse();
-        when(restTemplate.getForObject(anyString(), eq(CoinDeskResponse.class))).thenReturn(fakeResponse);
+    @DisplayName("[P0.1] 測試核心轉換邏輯：應能正確呼叫 API、資料庫，並透過 Mapper 轉換資料")
+    void testGetTransformedCoinDeskData_SuccessPath() {
+        // --- Arrange ---
 
-        // 準備資料庫的假回應 (對應 Service 中的 findAll() 呼叫)
+        // 準備 Coindesk API 的假回應。
+        CoinDeskResponse fakeApiResponse = createFakeCoinDeskResponse();
+
+        // 設定 WebClient 的 Mock 行為。
+        when(webClient.get()).thenReturn(requestHeadersUriSpec);
+        when(requestHeadersUriSpec.uri(anyString())).thenReturn(requestHeadersSpec);
+        when(requestHeadersSpec.retrieve()).thenReturn(responseSpec);
+        when(responseSpec.bodyToMono(CoinDeskResponse.class)).thenReturn(Mono.just(fakeApiResponse));
+
+        // 準備資料庫的假回應。
         Currency usdCurrency = new Currency();
         usdCurrency.setCode("USD");
         usdCurrency.setDisplayName("美金");
-        // 模擬資料庫回傳一個包含 USD 的列表
         when(currencyRepository.findAll()).thenReturn(Collections.singletonList(usdCurrency));
 
-        // 2. Act (執行要測試的方法)
+        // --- Act ---
         TransformedCoinDeskResponse result = coinDeskService.getTransformedCoinDeskData();
 
-        // 3. Assert (驗證結果)
+        // --- Assert ---
+        // 因為我們使用了真實的 Mapper，所以可以直接驗證轉換後的結果內容是否正確。
         assertEquals("2024/09/02 07:07:20", result.getUpdatedTime());
         assertEquals(2, result.getCurrencyInfo().size());
 
         // 驗證 USD 的轉換結果
         TransformedCoinDeskResponse.CurrencyInfo usdInfo = result.getCurrencyInfo().stream()
-                .filter(c -> c.getCode().equals("USD")).findFirst().get();
+                .filter(c -> "USD".equals(c.getCode())).findFirst().orElseThrow(AssertionError::new);
         assertEquals("美金", usdInfo.getChineseName());
         assertEquals(57756.2984f, usdInfo.getRate());
 
         // 驗證 GBP (資料庫中找不到) 的轉換結果
         TransformedCoinDeskResponse.CurrencyInfo gbpInfo = result.getCurrencyInfo().stream()
-                .filter(c -> c.getCode().equals("GBP")).findFirst().get();
+                .filter(c -> "GBP".equals(c.getCode())).findFirst().orElseThrow(AssertionError::new);
         assertEquals("N/A", gbpInfo.getChineseName()); // 驗證找不到時的預設值
     }
 
-    // 建立假 CoinDesk 回應的輔助方法
     private CoinDeskResponse createFakeCoinDeskResponse() {
         CoinDeskResponse response = new CoinDeskResponse();
-
         CoinDeskResponse.TimeData timeData = new CoinDeskResponse.TimeData();
         timeData.setUpdatedISO("2024-09-02T07:07:20+00:00");
         response.setTime(timeData);
-
         Map<String, CoinDeskResponse.BpiData> bpiMap = new HashMap<>();
 
         CoinDeskResponse.BpiData usdData = new CoinDeskResponse.BpiData();
