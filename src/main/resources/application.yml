@@ -57,7 +57,7 @@ spring:
 # EXTERNAL API CONFIGURATION
 # ===============================================
 
-coindesk:
+coin-desk:
   api:
     url: https://kengp3.github.io/blog/coindesk.json
     timeout: 5000
