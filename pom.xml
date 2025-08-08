@@ -21,6 +21,7 @@
         <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
         <commons-lang3.version>3.18.0</commons-lang3.version>
         <spotbugs-maven-plugin.version>4.8.6.2</spotbugs-maven-plugin.version>
+        <spotbugs-annotations.version>4.8.6</spotbugs-annotations.version>
     </properties>
 
     <dependencies>
@@ -56,6 +57,13 @@
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
             <version>${springdoc-openapi-ui.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.spotbugs</groupId>
+            <artifactId>spotbugs-annotations</artifactId>
+            <version>${spotbugs-annotations.version}</version>
+            <optional>true</optional>
         </dependency>
 
         <dependency>

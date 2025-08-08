@@ -1,5 +1,6 @@
 package io.github.montytsai.currencyapi.coindesk.service.impl;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.montytsai.currencyapi.coindesk.dto.CoinDeskResponse;
 import io.github.montytsai.currencyapi.coindesk.dto.TransformedCoinDeskResponse;
 import io.github.montytsai.currencyapi.coindesk.mapper.CoinDeskMapper;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@SuppressFBWarnings(value = "EI_EXPOSE_REP2", justification = "WebClient is a Spring-managed singleton bean and is intended to be shared.")
 public class CoinDeskServiceImpl implements CoinDeskService {
 
     @Value("${coin-desk.api.url}")
