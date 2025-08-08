@@ -3,6 +3,8 @@
 # ===============================================
 server:
   port: 8080
+  servlet:
+    context-path: /api/v1
 
 springdoc:
   info:
@@ -19,19 +21,68 @@ springdoc:
 # DATABASE & EXTERNAL API CONFIGURATION
 # ===============================================
 spring:
+  application:
+    name: currency-api
+
   datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
     username: sa
     password:
+
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
-    # Automatically run schema.sql and data.sql on startup
-    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        use_sql_comments: true
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:schema.sql
+      data-locations: classpath:data.sql
+
   h2:
     console:
       enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: true
+
+# ===============================================
+# EXTERNAL API CONFIGURATION
+# ===============================================
 
 coindesk:
   api:
     url: https://kengp3.github.io/blog/coindesk.json
+    timeout: 5000
+    retry-count: 3
+
+# ===============================================
+# LOGGING CONFIGURATION
+# ===============================================
+logging:
+  level:
+    io.github.montytsai: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+
+# ===============================================
+# MANAGEMENT & ACTUATOR
+# ===============================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always

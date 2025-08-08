@@ -1,0 +1,6 @@
+-- 插入初始幣別測試資料
+INSERT INTO CURRENCY (code, display_name, symbol, is_active, created_at, updated_at) VALUES
+('USD', '美金', '$', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('GBP', '英鎊', '£', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('EUR', '歐元', '€', TRUE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+('CAD', '加幣', 'C$', FALSE, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

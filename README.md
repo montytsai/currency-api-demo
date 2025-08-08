@@ -13,17 +13,17 @@ English | [繁體中文](README.zh-TW.md)
 
 After starting the application, the interactive API documentation is available at:
 
-> **Swagger UI**: [`http://localhost:8080/swagger-ui/index.html`](http://localhost:8080/swagger-ui/index.html)
+> **Swagger UI**: [`http://localhost:8080/api/v1/swagger-ui.html`](http://localhost:8080/api/v1/swagger-ui.html)
 
 ---
 
 ## ✨ Features
 
+- **API Versioning**: Implements a `v1` context path (`/api/v1`) for all endpoints, ensuring maintainability and allowing for future non-breaking API evolution.
 - **Modular & Layered Architecture**: Features are isolated into modules with a clear, layered internal structure, promoting maintainability and scalability.
-- **Database Operations (CRUD)**: Full implementation of Create, Read, Update, and Delete operations using Spring Data JPA.
-- **Third-Party API Integration**: Demonstrates consuming, processing, and transforming data from an external REST API. 
-- **Data Transformation Layer**: Enriches raw external data into a custom internal format using a dedicated Mapper layer. 
-- **Unit & Integration Testing**: Test coverage for key business logic and API endpoints using JUnit 5 and Mockito. 
+- **Database Operations (CRUD)**: Full implementation of Create, Read, Update, and Delete operations using Spring Data JPA, including a soft-delete mechanism.
+- **Third-Party API Integration**: Demonstrates consuming, processing, and transforming data from an external REST API.
+- **Unit & Integration Testing**: Test coverage for key business logic and API endpoints using JUnit 5 and Mockito.
 - **API Documentation**: Auto-generated, interactive API documentation via Swagger (SpringDoc).
 - **CI Automation**: A GitHub Actions workflow automatically builds and tests the project on every push to ensure code stability.
 
@@ -43,6 +43,7 @@ After starting the application, the interactive API documentation is available a
 ## 🏛️ Project Structure & Modularization
 
 This project follows a "**Package by Feature, Layered Inside**" structure to achieve high cohesion and low coupling.
+
 > This modularization enables a clear separation of concerns, ease of testing, and scalability for future feature additions.
 
 ```
@@ -79,8 +80,11 @@ io.github.montytsai.currencyapi
 ```bash
 mvn spring-boot:run
 ```
+The application will start, and all API endpoints are versioned under the `/api/v1` context path.
 
-App will be available at: http://localhost:8080
+- Base URL: http://localhost:8080/api/v1
+
+- Example Endpoint: GET http://localhost:8080/api/v1/currencies
 
 ---
 

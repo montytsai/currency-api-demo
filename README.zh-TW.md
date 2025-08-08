@@ -13,16 +13,16 @@
 
 啟動後可透過 Swagger UI 查看並操作 API：
 
-> **Swagger UI**：[`http://localhost:8080/swagger-ui/index.html`](http://localhost:8080/swagger-ui/index.html)
+> **Swagger UI**：[`http://localhost:8080/api/v1/swagger-ui.html`](http://localhost:8080/api/v1/swagger-ui.html)
 
 ---
 
 ## ✨ 功能亮點
 
+- **API 版本化**：所有 API 端點皆位於 `/api/v1` 路徑下，實踐了 API 版本控制，確保了未來的可維護性與擴展性。
 - **分層與模組化設計**：依功能切分獨立模組，並在模組內遵循清晰的分層架構，提升可維護性與擴充性。
-- **資料庫操作 (CRUD)**：使用 Spring Data JPA 實作完整的資料庫讀寫、更新與刪除功能。
+- **資料庫操作 (CRUD)**：使用 Spring Data JPA 實作完整的資料庫操作，並包含「軟刪除」機制。
 - **外部服務整合**：演示如何串接、處理並轉換第三方 REST API 資料。
-- **資料轉換層設計**：將外部原始資料，透過獨立的 Mapper 轉換為符合內部需求的豐富格式。
 - **單元與整合測試**：使用 JUnit 5 與 Mockito，針對核心邏輯與 API 端點撰寫測試，確保程式碼品質。
 - **API 文件化**：整合 Swagger (SpringDoc) 自動生成互動式 API 文件。
 - **CI 自動化建置**：設定 GitHub Actions，在每次提交後自動執行編譯與測試，確保程式碼穩定性。
@@ -42,7 +42,8 @@
 
 ## 🏛️ 專案架構與模組設計
 
-本專案採用「**按功能模組，內部再分層**」的結構，旨在實現高內聚、低耦合的目標。
+本專案採用「**按功能模組，內部再分層**」的結構，旨在實現**高內聚、低耦合**的目標。
+
 > 這種模組化設計讓開發者能快速理解各功能邊界，便於單元測試與未來功能擴充。
 
 ```
@@ -79,8 +80,11 @@ io.github.montytsai.currencyapi
 ```bash
 mvn spring-boot:run
 ```
+應用程式啟動後，所有 API 端點皆位於 `/api/v1` 路徑下。
 
-啟動後應用服務位於：http://localhost:8080
+- 基礎路徑：http://localhost:8080/api/v1
+
+- API 範例：GET http://localhost:8080/api/v1/currencies
 
 ---
 
