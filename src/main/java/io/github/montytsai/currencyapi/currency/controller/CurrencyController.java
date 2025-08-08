@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,11 +30,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/currencies")
 public class CurrencyController {
 
-    private final CurrencyService currencyService;
-
-    public CurrencyController(CurrencyService currencyService) {
-        this.currencyService = currencyService;
-    }
+    @Autowired
+    private CurrencyService currencyService;
 
     @Operation(summary = "查詢所有「啟用」的幣別資料")
     @GetMapping
