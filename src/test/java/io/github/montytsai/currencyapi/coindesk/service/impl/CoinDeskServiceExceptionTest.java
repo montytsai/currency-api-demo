@@ -1,14 +1,11 @@
 package io.github.montytsai.currencyapi.coindesk.service.impl;
 
-import io.github.montytsai.currencyapi.coindesk.mapper.CoinDeskMapper;
-import io.github.montytsai.currencyapi.currency.repository.CurrencyRepository;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.HttpClientErrorException;
@@ -21,6 +18,9 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
+import io.github.montytsai.currencyapi.coindesk.mapper.CoinDeskMapper;
+import io.github.montytsai.currencyapi.currency.repository.CurrencyRepository;
+
 /**
  * 針對 CoinDeskServiceImpl 的例外與邊界條件進行單元測試。
  */
@@ -29,25 +29,16 @@ class CoinDeskServiceExceptionTest {
 
     @Mock
     private RestTemplate restTemplate;
-
     @Mock
-    private CurrencyRepository currencyRepository; // 雖然此測試中未使用，但為維持建構子完整性而 Mock
-
+    private CurrencyRepository currencyRepository;
     @Mock
-    private CoinDeskMapper coinDeskMapper; // 同上
+    private CoinDeskMapper coinDeskMapper;
 
+    @InjectMocks
     private CoinDeskServiceImpl coinDeskService;
 
     @BeforeEach
     void setUp() {
-        // 初始化所有 @Mock 註解的欄位 (restTemplate, currencyRepository)
-        MockitoAnnotations.openMocks(this);
-
-        ReflectionTestUtils.setField(coinDeskService, "restTemplate", restTemplate);
-        ReflectionTestUtils.setField(coinDeskService, "currencyRepository", currencyRepository);
-        ReflectionTestUtils.setField(coinDeskService, "coinDeskMapper", coinDeskMapper);
-
-        // 為 @Value 欄位設定假值
         ReflectionTestUtils.setField(coinDeskService, "coinDeskApiUrl", "http://fake-url.com");
     }
 
