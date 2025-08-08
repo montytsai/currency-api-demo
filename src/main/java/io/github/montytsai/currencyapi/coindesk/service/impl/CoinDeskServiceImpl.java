@@ -8,6 +8,7 @@ import io.github.montytsai.currencyapi.currency.entity.Currency;
 import io.github.montytsai.currencyapi.currency.repository.CurrencyRepository;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -24,15 +25,12 @@ public class CoinDeskServiceImpl implements CoinDeskService {
     @Value("${coin-desk.api.url}")
     private String coinDeskApiUrl;
 
-    private final RestTemplate restTemplate;
-    private final CurrencyRepository currencyRepository;
-    private final CoinDeskMapper coinDeskMapper; // 注入新的 Mapper
-
-    public CoinDeskServiceImpl(RestTemplate restTemplate, CurrencyRepository currencyRepository, CoinDeskMapper coinDeskMapper) {
-        this.restTemplate = restTemplate;
-        this.currencyRepository = currencyRepository;
-        this.coinDeskMapper = coinDeskMapper;
-    }
+    @Autowired
+    private RestTemplate restTemplate;
+    @Autowired
+    private CurrencyRepository currencyRepository;
+    @Autowired
+    private CoinDeskMapper coinDeskMapper;
 
     @Override
     public CoinDeskResponse getOriginalCoinDeskData() {

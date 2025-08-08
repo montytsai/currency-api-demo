@@ -31,18 +31,19 @@ class CoinDeskServiceImplTest {
     @Mock
     private CurrencyRepository currencyRepository;
 
-    // 我們要測試 Service 和 Mapper 的整合，所以直接 new 一個真實的 Mapper
-    private CoinDeskMapper coinDeskMapper = new CoinDeskMapper();
+    private final CoinDeskMapper coinDeskMapper = new CoinDeskMapper();
 
-    // 這是我們要測試的對象
-    private CoinDeskServiceImpl coinDeskService;
+    private final CoinDeskServiceImpl coinDeskService = new CoinDeskServiceImpl();
 
     @BeforeEach
     void setUp() {
-        // 初始化所有 @Mock 註解的欄位
+        // 初始化所有 @Mock 註解的欄位 (restTemplate, currencyRepository)
         MockitoAnnotations.openMocks(this);
-        // 手動建立 Service 實例，並注入所有依賴（包含真實的 Mapper）
-        coinDeskService = new CoinDeskServiceImpl(restTemplate, currencyRepository, coinDeskMapper);
+
+        ReflectionTestUtils.setField(coinDeskService, "restTemplate", restTemplate);
+        ReflectionTestUtils.setField(coinDeskService, "currencyRepository", currencyRepository);
+        ReflectionTestUtils.setField(coinDeskService, "coinDeskMapper", coinDeskMapper);
+
         // 為 @Value 欄位設定假值
         ReflectionTestUtils.setField(coinDeskService, "coinDeskApiUrl", "http://fake-url.com");
     }
