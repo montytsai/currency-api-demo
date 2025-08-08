@@ -115,5 +115,20 @@ docker run -p 8080:8080 currency-api-demo
 
 ---
 
-## 📃 授權說明
-本專案僅用於學習與展示用途，不用於商業部署。
+## 🧪 測試與覆蓋面說明
+
+- 單元測試覆蓋核心商業邏輯，包含 service 與 mapper 層。
+- 使用 Spring Boot `@WebMvcTest` 測試 controller 層與整合測試。
+- 包含全域例外處理測試。
+- 測試環境使用 H2 內存資料庫，搭配事務回滾確保測試隔離。
+- CI 透過 GitHub Actions 自動化測試，保持穩定性。
+
+---
+
+## 🔧 CI 自動化說明
+
+- 使用 GitHub Actions 執行編譯、單元與整合測試。
+- 監控每次 push 及 pull request，確保程式碼品質。
+- workflow 設定檔位置：`.github/workflows/ci.yml`
+v1` 路徑呼叫 API，避免升級破壞。
+- **例外處理**：全域例外處理統一回傳標準化 JSON 錯誤格式。

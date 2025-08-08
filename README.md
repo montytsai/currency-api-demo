@@ -2,7 +2,7 @@
 
 [![Java CI with Maven](https://github.com/montytsai/currency-api-demo/actions/workflows/ci.yml/badge.svg)](https://github.com/montytsai/currency-api-demo/actions/workflows/ci.yml)
 
-A showcase project demonstrating robust backend engineering practices with Java 8 and Spring Boot 2. 
+A showcase project demonstrating robust backend engineering practices with Java 8 and Spring Boot 2.
 The core focus is to illustrate how a well-structured, fully-tested, and CI-automated service is built, using the Coindesk API as a case study for third-party API integration and data transformation.
 
 English | [繁體中文](README.zh-TW.md)
@@ -115,5 +115,19 @@ See [Swagger UI](#-interactive-api-documentation-swagger-ui) for complete endpoi
 
 ---
 
-## 📄 License
-This project is for demonstration and educational purposes.
+## 🧪 Testing & Coverage
+
+- Comprehensive unit tests cover core business logic in service and mapper layers.
+- Controller layer is tested with Spring Boot’s `@WebMvcTest` and integration tests using `@SpringBootTest`.
+- Exception handling scenarios, including global exception handling, are verified.
+- Test profile uses an in-memory H2 database with transactional rollback to isolate tests.
+- Test coverage badge is visible in the CI workflow badge on the top of this README.
+
+---
+
+## 🔧 Continuous Integration (CI)
+
+- CI pipeline runs on GitHub Actions.
+- Automates compilation, unit and integration testing on every push or pull request.
+- Ensures code stability and prevents regressions.
+- Workflow file located at `.github/workflows/ci.yml`.
