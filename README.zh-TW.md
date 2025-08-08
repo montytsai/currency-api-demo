@@ -130,5 +130,3 @@ docker run -p 8080:8080 currency-api-demo
 - 使用 GitHub Actions 執行編譯、單元與整合測試。
 - 監控每次 push 及 pull request，確保程式碼品質。
 - workflow 設定檔位置：`.github/workflows/ci.yml`
-v1` 路徑呼叫 API，避免升級破壞。
-- **例外處理**：全域例外處理統一回傳標準化 JSON 錯誤格式。
